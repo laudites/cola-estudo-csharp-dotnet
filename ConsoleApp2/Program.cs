@@ -218,8 +218,7 @@ namespace ConsoleApp2
 
             try
             {
-                HttpResponseMessage response =
-                    await client.GetAsync(url);
+                HttpResponseMessage response = await client.GetAsync(url);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -296,13 +295,9 @@ namespace ConsoleApp2
                     return;
                 }
 
-                string json =
-                    await response.Content
-                        .ReadAsStringAsync();
+                string json = await response.Content.ReadAsStringAsync();
 
-                List<Cliente>? clientes =
-                    JsonSerializer.Deserialize<List<Cliente>>(
-                        json,
+                List<Cliente>? clientes = JsonSerializer.Deserialize<List<Cliente>>(json,
                         new JsonSerializerOptions
                         {
                             PropertyNameCaseInsensitive = true
@@ -340,6 +335,38 @@ namespace ConsoleApp2
             {
                 Console.WriteLine(
                     $"Erro ao acessar API: {ex.Message}"
+                );
+            }
+        }
+
+        static async Task BuscarClientesTeste()
+        {
+            using HttpClient client = new HttpClient();
+
+            string url = "https://localhost:7103/api/clientes";
+
+            HttpResponseMessage response = await client.GetAsync(url);
+
+            string json = await response.Content.ReadAsStringAsync();
+
+            List<Cliente>? clientes = JsonSerializer.Deserialize<List<Cliente>>(json,
+                    new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true
+                    });
+
+            foreach (var cliente in clientes)
+            {
+                string status =
+                    cliente.Ativo
+                        ? "Ativo"
+                        : "Inativo";
+
+                Console.WriteLine(
+                    $"{cliente.Id} - " +
+                    $"{cliente.Nome} - " +
+                    $"{cliente.Email} - " +
+                    $"{status}"
                 );
             }
         }
